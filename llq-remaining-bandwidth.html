@@ -1,0 +1,186 @@
+<div id="llq-remaining-bandwidth" aria-label="Interactive Cisco QoS simulator explaining priority percent and bandwidth remaining percent with a voice class and the built-in class-default.">
+  <style>
+    #llq-remaining-bandwidth { width: 100%; color: var(--foreground); font-family: inherit; }
+    #llq-remaining-bandwidth * { box-sizing: border-box; }
+    #llq-remaining-bandwidth .lr-wrap { display: grid; gap: 18px; }
+    #llq-remaining-bandwidth .lr-heading { margin: 0; text-align: center; }
+    #llq-remaining-bandwidth .lr-controls { justify-content: center; }
+    #llq-remaining-bandwidth .lr-control-head { display: flex; justify-content: space-between; gap: 14px; }
+    #llq-remaining-bandwidth .lr-main { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,.95fr); gap: 20px; align-items: start; }
+    #llq-remaining-bandwidth .lr-flow { display: grid; gap: 14px; }
+    #llq-remaining-bandwidth .lr-classification { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+    #llq-remaining-bandwidth .lr-traffic { display: grid; gap: 6px; text-align: center; }
+    #llq-remaining-bandwidth .lr-traffic strong { font-weight: 500; }
+    #llq-remaining-bandwidth .lr-traffic span { color: var(--muted-foreground); }
+    #llq-remaining-bandwidth .lr-arrow { color: var(--muted-foreground); }
+    #llq-remaining-bandwidth .lr-arrow svg { width: 28px; height: 24px; }
+    #llq-remaining-bandwidth .lr-queues { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    #llq-remaining-bandwidth .lr-queue { display: grid; gap: 7px; padding: 11px 0; border-top: 3px solid var(--border); border-bottom: 1px solid var(--border); }
+    #llq-remaining-bandwidth .lr-voice { border-top-color: var(--viz-series-1); }
+    #llq-remaining-bandwidth .lr-default { border-top-color: var(--viz-series-2); }
+    #llq-remaining-bandwidth .lr-queue-head { display: flex; justify-content: space-between; gap: 10px; }
+    #llq-remaining-bandwidth .lr-queue-head strong { font-weight: 500; }
+    #llq-remaining-bandwidth .lr-queue-head span { color: var(--muted-foreground); }
+    #llq-remaining-bandwidth .lr-bar { height: 18px; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; background: var(--muted); }
+    #llq-remaining-bandwidth .lr-fill { height: 100%; width: 0; transition: width .18s ease; }
+    #llq-remaining-bandwidth .lr-voice .lr-fill { background: var(--viz-series-1); }
+    #llq-remaining-bandwidth .lr-default .lr-fill { background: var(--viz-series-2); }
+    #llq-remaining-bandwidth .lr-result { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; color: var(--muted-foreground); }
+    #llq-remaining-bandwidth .lr-result strong { display: block; color: var(--foreground); font-weight: 500; }
+    #llq-remaining-bandwidth .lr-link { display: grid; gap: 7px; padding-top: 10px; border-top: 1px solid var(--border); }
+    #llq-remaining-bandwidth .lr-link-head { display: flex; justify-content: space-between; gap: 10px; }
+    #llq-remaining-bandwidth .lr-link-head strong { font-weight: 500; }
+    #llq-remaining-bandwidth .lr-link-head span { color: var(--muted-foreground); }
+    #llq-remaining-bandwidth .lr-link-meter { height: 26px; display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--muted); }
+    #llq-remaining-bandwidth .lr-link-voice { background: var(--viz-series-1); width: 20%; }
+    #llq-remaining-bandwidth .lr-link-data { background: var(--viz-series-2); width: 64%; }
+    #llq-remaining-bandwidth .lr-link-free { flex: 1; }
+    #llq-remaining-bandwidth .lr-status { text-align: center; min-height: 2.8em; color: var(--muted-foreground); }
+    #llq-remaining-bandwidth .lr-status strong { color: var(--foreground); font-weight: 500; }
+    #llq-remaining-bandwidth .lr-code-area { display: grid; gap: 9px; }
+    #llq-remaining-bandwidth .lr-code-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+    #llq-remaining-bandwidth .lr-code-head strong { font-weight: 500; }
+    #llq-remaining-bandwidth .lr-code-head span { color: var(--muted-foreground); }
+    #llq-remaining-bandwidth pre { margin: 0; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--card-foreground); overflow-x: auto; }
+    #llq-remaining-bandwidth .lr-calc { display: grid; gap: 8px; padding-top: 11px; border-top: 1px solid var(--border); }
+    #llq-remaining-bandwidth .lr-calc-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; }
+    #llq-remaining-bandwidth .lr-calc-row span:first-child { color: var(--muted-foreground); }
+    #llq-remaining-bandwidth .lr-warning { padding-top: 11px; border-top: 1px solid var(--border); color: var(--muted-foreground); }
+    #llq-remaining-bandwidth .lr-warning strong { color: var(--foreground); font-weight: 500; }
+    @media (prefers-reduced-motion: reduce) { #llq-remaining-bandwidth .lr-fill { transition: none; } }
+    @media (max-width: 650px) {
+      #llq-remaining-bandwidth .lr-main { grid-template-columns: 1fr; }
+      #llq-remaining-bandwidth .lr-classification { grid-template-columns: 1fr; }
+      #llq-remaining-bandwidth .lr-arrow { display: grid; place-items: center; }
+      #llq-remaining-bandwidth .lr-arrow svg { transform: rotate(90deg); }
+    }
+  </style>
+
+  <div class="lr-wrap">
+    <h2 class="lr-heading">LLQ Voice + bandwidth remaining</h2>
+
+    <div class="viz-controls lr-controls">
+      <label class="form-label">
+        <span class="lr-control-head"><span>Voice offered load</span><strong id="lr-voice-demand-label">15 Mbps</strong></span>
+        <input class="form-range" id="lr-voice-demand" type="range" min="0" max="80" step="5" value="15">
+      </label>
+      <label class="form-label">
+        <span class="lr-control-head"><span>Other traffic offered load</span><strong id="lr-data-demand-label">70 Mbps</strong></span>
+        <input class="form-range" id="lr-data-demand" type="range" min="0" max="140" step="5" value="70">
+      </label>
+    </div>
+
+    <div class="lr-main">
+      <div class="lr-flow" role="img" id="lr-summary" aria-label="On a 100 megabit link, 15 megabits of voice and 70 megabits of other traffic are transmitted without congestion.">
+        <div class="lr-classification">
+          <div class="lr-traffic"><strong>DSCP EF packets</strong><span>Match class VOICE</span></div>
+          <div class="lr-arrow" aria-hidden="true"><svg viewBox="0 0 28 24"><path d="M2 12 H22 M16 5 L23 12 L16 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="lr-traffic"><strong>Everything else</strong><span>Built-in class-default</span></div>
+        </div>
+
+        <div class="lr-queues">
+          <div class="lr-queue lr-voice">
+            <div class="lr-queue-head"><strong>VOICE · LLQ</strong><span>priority 20%</span></div>
+            <div class="lr-bar"><div class="lr-fill" id="lr-voice-fill"></div></div>
+            <div class="lr-result"><span>Demand<strong id="lr-voice-demand-out">15 Mbps</strong></span><span>Sent<strong id="lr-voice-sent">15 Mbps</strong></span></div>
+          </div>
+          <div class="lr-queue lr-default">
+            <div class="lr-queue-head"><strong>class-default</strong><span>remaining 80%</span></div>
+            <div class="lr-bar"><div class="lr-fill" id="lr-data-fill"></div></div>
+            <div class="lr-result"><span>Demand<strong id="lr-data-demand-out">70 Mbps</strong></span><span>Sent<strong id="lr-data-sent">70 Mbps</strong></span></div>
+          </div>
+        </div>
+
+        <div class="lr-link">
+          <div class="lr-link-head"><strong>WAN link · 100 Mbps</strong><span id="lr-utilisation">85% utilised</span></div>
+          <div class="lr-link-meter" aria-hidden="true"><span class="lr-link-voice" id="lr-link-voice"></span><span class="lr-link-data" id="lr-link-data"></span><span class="lr-link-free"></span></div>
+        </div>
+
+        <div class="lr-status" id="lr-status" aria-live="polite"><strong>No congestion:</strong> both classes send everything they offer.</div>
+      </div>
+
+      <div class="lr-code-area">
+        <div class="lr-code-head"><strong>Corrected configuration</strong><span>No custom default class needed</span></div>
+        <pre><code>class-map match-any VOICE
+ match dscp ef
+!
+policy-map WAN-POLICY
+ class VOICE
+  priority percent 20
+ class class-default
+  bandwidth remaining percent 80
+!
+interface GigabitEthernet0/0
+ service-policy output WAN-POLICY</code></pre>
+
+        <div class="lr-calc">
+          <div class="lr-calc-row"><span>LLQ reference</span><strong>20% × 100 = 20 Mbps</strong></div>
+          <div class="lr-calc-row"><span>Bandwidth remaining pool</span><strong>100 − 20 = 80 Mbps</strong></div>
+          <div class="lr-calc-row"><span>80% of remaining pool</span><strong>80% × 80 = 64 Mbps</strong></div>
+        </div>
+
+        <div class="lr-warning"><strong>The important distinction:</strong> <code>bandwidth remaining percent 80</code> does not mean “80% of the whole link”. It is a share of bandwidth left after priority and fixed guarantees. Unused bandwidth may still be borrowed.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById('llq-remaining-bandwidth');
+      const voiceInput = root.querySelector('#lr-voice-demand');
+      const dataInput = root.querySelector('#lr-data-demand');
+      const capacity = 100;
+      const llqLimit = 20;
+
+      function setText(id,text) { root.querySelector(id).textContent = text; }
+
+      function render() {
+        const voiceDemand = Number(voiceInput.value);
+        const dataDemand = Number(dataInput.value);
+        const congested = voiceDemand + dataDemand > capacity;
+        let voiceSent;
+        let dataSent;
+
+        if (!congested) {
+          voiceSent = voiceDemand;
+          dataSent = dataDemand;
+        } else {
+          voiceSent = Math.min(voiceDemand,llqLimit);
+          dataSent = Math.min(dataDemand,capacity - voiceSent);
+        }
+
+        const totalSent = voiceSent + dataSent;
+        const voiceLoss = Math.max(0,voiceDemand - voiceSent);
+        const dataLoss = Math.max(0,dataDemand - dataSent);
+        setText('#lr-voice-demand-label',voiceDemand + ' Mbps');
+        setText('#lr-data-demand-label',dataDemand + ' Mbps');
+        setText('#lr-voice-demand-out',voiceDemand + ' Mbps');
+        setText('#lr-data-demand-out',dataDemand + ' Mbps');
+        setText('#lr-voice-sent',voiceSent + ' Mbps');
+        setText('#lr-data-sent',dataSent + ' Mbps');
+        setText('#lr-utilisation',totalSent + '% utilised');
+        root.querySelector('#lr-voice-fill').style.width = Math.min(100,voiceDemand / 80 * 100) + '%';
+        root.querySelector('#lr-data-fill').style.width = Math.min(100,dataDemand / 140 * 100) + '%';
+        root.querySelector('#lr-link-voice').style.width = voiceSent + '%';
+        root.querySelector('#lr-link-data').style.width = dataSent + '%';
+
+        let status;
+        if (!congested) {
+          status = '<strong>No congestion:</strong> both classes send everything they offer; the 20% LLQ value is not a permanent partition.';
+        } else if (voiceLoss > 0) {
+          status = '<strong>Congestion:</strong> Voice is held to the 20 Mbps LLQ reference and other traffic uses the remaining ' + dataSent + ' Mbps.';
+        } else if (dataLoss > 0) {
+          status = '<strong>Congestion:</strong> Voice is served first and class-default receives the remaining ' + dataSent + ' Mbps.';
+        } else {
+          status = '<strong>At capacity:</strong> all offered traffic fits exactly on the link.';
+        }
+        root.querySelector('#lr-status').innerHTML = status;
+        root.querySelector('#lr-summary').setAttribute('aria-label','On a 100 megabit link, ' + voiceDemand + ' megabits of voice demand results in ' + voiceSent + ' megabits sent, and ' + dataDemand + ' megabits of other traffic demand results in ' + dataSent + ' megabits sent.');
+      }
+
+      voiceInput.addEventListener('input',render);
+      dataInput.addEventListener('input',render);
+      render();
+    })();
+  </script>
+</div>

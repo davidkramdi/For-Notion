@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Incident Grid Master Infoblox — explication et schémas</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --muted:          #898781;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --blue:           #2a78d6;
+    --good:           #0ca30c;
+    --warning:        #fab219;
+    --serious:        #ec835a;
+    --critical:       #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --muted:          #898781;
+      --gridline:       #2c2c2a;
+      --border:         rgba(255,255,255,0.10);
+      --blue:           #3987e5;
+      --good:           #0ca30c;
+      --warning:        #fab219;
+      --serious:        #ec835a;
+      --critical:       #e66767;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-plane);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text-primary);
+  }
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  .subtitle { color: var(--text-secondary); font-size: 14px; margin: 0 0 32px; }
+  h2 { font-size: 16px; margin: 40px 0 4px; }
+  .section-note {
+    color: var(--text-secondary); font-size: 13.5px; margin: 0 0 18px;
+    max-width: 760px; line-height: 1.5;
+  }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 22px;
+  }
+  p.lead { font-size: 14px; line-height: 1.6; color: var(--text-primary); }
+  p.lead b { font-weight: 600; }
+  code {
+    background: var(--gridline); padding: 1px 5px; border-radius: 4px;
+    font-size: 0.92em;
+  }
+
+  /* ---------- Diagram 1 : état actuel ---------- */
+  .topo-svg { width: 100%; height: auto; display: block; }
+  .node-title { font-size: 13.5px; font-weight: 600; fill: var(--text-primary); }
+  .node-sub { font-size: 11px; fill: var(--text-secondary); }
+  .badge-text { font-size: 11px; font-weight: 600; }
+  .conn-label { font-size: 11px; fill: var(--text-secondary); }
+  .grid-label { font-size: 11px; font-weight: 600; fill: var(--text-secondary); letter-spacing: .04em; text-transform: uppercase; }
+
+  /* ---------- Table ---------- */
+  table.members {
+    width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 12.5px;
+  }
+  table.members th, table.members td {
+    text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--gridline);
+  }
+  table.members th {
+    color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .03em;
+  }
+  table.members td.mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, monospace; font-size: 12px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 20px; font-weight: 600; font-size: 11px; }
+  .pill.good { background: rgba(12,163,12,0.12); color: #0a7a0a; }
+  .pill.critical { background: rgba(208,59,59,0.12); color: var(--critical); }
+  .pill.offline { background: var(--gridline); color: var(--text-secondary); }
+
+  /* ---------- Diagram 2 : chronologie ---------- */
+  .timeline { position: relative; margin: 8px 0 0; padding-left: 6px; }
+  .tl-item { display: flex; gap: 16px; position: relative; padding-bottom: 22px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-dot-col { display: flex; flex-direction: column; align-items: center; }
+  .tl-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--surface-1); border: 2px solid var(--blue);
+    color: var(--blue); font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .tl-dot.crit { border-color: var(--critical); color: var(--critical); }
+  .tl-line { flex: 1; width: 2px; background: var(--gridline); margin-top: 4px; }
+  .tl-text { font-size: 13.5px; line-height: 1.5; padding-top: 2px; }
+  .tl-text b { font-weight: 600; }
+  .tl-text .tag {
+    display: inline-block; font-size: 10.5px; font-weight: 700;
+    padding: 1px 7px; border-radius: 20px; margin-left: 6px;
+    background: rgba(208,59,59,0.12); color: var(--critical); vertical-align: middle;
+  }
+
+  /* ---------- Diagram 3 : plan de ce soir ---------- */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; margin-top: 10px; }
+  .flow-step {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px; width: 190px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .flow-step .num { font-size: 11px; font-weight: 700; color: var(--blue); }
+  .flow-step .t { font-size: 13px; font-weight: 600; line-height: 1.35; }
+  .flow-step .d { font-size: 11.5px; color: var(--text-secondary); line-height: 1.4; }
+  .flow-arrow { align-self: center; color: var(--muted); font-size: 18px; flex-shrink: 0; }
+  .checkpoint {
+    background: rgba(250,178,25,0.08); border: 1px dashed var(--warning);
+    border-radius: 10px; padding: 12px 14px; width: 190px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .checkpoint .t { font-size: 12.5px; font-weight: 700; color: #8a5a00; }
+  .checkpoint .d { font-size: 11.5px; color: var(--text-secondary); line-height: 1.4; }
+  @media (prefers-color-scheme: dark) { .checkpoint .t { color: var(--warning); } }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; font-size: 12px; color: var(--text-secondary); }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot.good { background: var(--good); }
+  .dot.warning { background: var(--warning); }
+  .dot.critical { background: var(--critical); }
+</style>
+</head>
+<body>
+<div class="viz-root">
+<div class="wrap">
+
+  <h1>Incident Grid Master Infoblox — vue d'ensemble</h1>
+  <p class="subtitle">Ticket DXC · double Grid Master (split-brain) · noms d'appliances et IPs à jour d'après Grid Manager</p>
+
+  <div class="card">
+    <p class="lead">
+      <b>cacdnswdf002.infra.olisnet.com</b> est l'ancien Grid Master (pas de HA configuré) — il tourne, il sert le trafic, et il se déclare lui-même <code>ID Grid Master</code> en CLI.
+      <br><br>
+      <b>cacdnsddc034.infra.olisnet.com</b> est la paire HA du GMC (nouveau matériel) — <code>HA Broken</code>, affichée <code>Offline</code> globalement, mais son nœud actif (Node 2) se déclare <i>lui aussi</i> <code>ID Grid Master</code> en CLI avec <code>HA Status: Active</code>. C'est exactement le split-brain : les deux appliances pensent chacune être la source de vérité.
+    </p>
+  </div>
+
+  <h2>1 · État actuel du Grid</h2>
+  <p class="section-note">D'après la vue Members et les <code>show status</code> CLI fournis. Un seul appareil sert réellement le trafic — les deux nœuds du GMC sont en erreur mais gardent chacun un statut Grid Master incohérent en base.</p>
+  <div class="card">
+    <svg class="topo-svg" viewBox="0 0 980 340" xmlns="http://www.w3.org/2000/svg">
+      <!-- Grid boundary -->
+      <rect x="30" y="90" width="360" height="200" rx="14" fill="none" stroke="#2a78d6" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.5"/>
+      <text x="46" y="112" class="grid-label" fill="#2a78d6">Grid opérationnel</text>
+
+      <!-- Node A: cacdnswdf002 -->
+      <rect x="55" y="150" width="300" height="120" rx="10" fill="var(--surface-1)" stroke="var(--border)" stroke-width="1"/>
+      <text x="75" y="178" class="node-title">cacdnswdf002.infra.olisnet.com</text>
+      <text x="75" y="196" class="node-sub">HA : Not Configured</text>
+      <circle cx="80" cy="220" r="4" fill="#0ca30c"/>
+      <text x="92" y="224" class="badge-text" fill="#0ca30c">RUNNING — sert DNS/DHCP</text>
+      <text x="75" y="242" class="node-sub">Grid Status CLI : ID Grid Master</text>
+      <text x="75" y="258" class="node-sub" font-family="ui-monospace,monospace">10.195.250.11 · mgmt 192.168.22.195</text>
+
+      <!-- Node B: cacdnsddc034 Node2 ACTIVE -->
+      <rect x="640" y="45" width="300" height="120" rx="10" fill="var(--surface-1)" stroke="var(--border)" stroke-width="1"/>
+      <text x="660" y="73" class="node-title">cacdnsddc034 — Node 2 (ACTIVE)</text>
+      <text x="660" y="91" class="node-sub">HA (parent) : Broken</text>
+      <circle cx="665" cy="115" r="4" fill="#d03b3b"/>
+      <text x="677" y="119" class="badge-text" fill="#d03b3b">ERROR</text>
+      <text x="660" y="137" class="node-sub">Grid Status CLI : ID Grid Master (HA Active)</text>
+      <text x="660" y="153" class="node-sub" font-family="ui-monospace,monospace">10.195.250.56 · mgmt 192.168.22.197</text>
+
+      <!-- Node C: cacdnsddc034 Node1 PASSIVE -->
+      <rect x="640" y="205" width="300" height="120" rx="10" fill="var(--surface-1)" stroke="var(--border)" stroke-width="1"/>
+      <text x="660" y="233" class="node-title">cacdnsddc034 — Node 1 (PASSIVE)</text>
+      <text x="660" y="251" class="node-sub">HA (parent) : Broken</text>
+      <circle cx="665" cy="275" r="4" fill="#d03b3b"/>
+      <text x="677" y="279" class="badge-text" fill="#d03b3b">ERROR</text>
+      <text x="660" y="297" class="node-sub">Membre de la paire GMC, hors ligne</text>
+      <text x="660" y="313" class="node-sub" font-family="ui-monospace,monospace">10.195.250.54 · mgmt 192.168.22.196</text>
+
+      <!-- Connector A - B (conflict) -->
+      <path d="M 355 195 C 500 150, 500 105, 638 100" fill="none" stroke="#d03b3b" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="450" y="140" class="conn-label" fill="#d03b3b">⚠ double Grid Master (split-brain)</text>
+
+      <!-- Connector A - C -->
+      <path d="M 355 235 C 500 260, 500 275, 638 275" fill="none" stroke="#fab219" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="450" y="302" class="conn-label" fill="#a86a00">paire HA cassée (VIP 10.195.250.10)</text>
+    </svg>
+    <div class="legend">
+      <div class="item"><span class="dot good"></span>Sert le trafic normalement</div>
+      <div class="item"><span class="dot critical"></span>Erreur / hors ligne, statut incohérent</div>
+    </div>
+
+    <table class="members">
+      <thead>
+        <tr><th>Name</th><th>HA</th><th>Status</th><th>IPv4 Address</th><th>Mgmt IPv4</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>cacdnswdf002.infra.olisnet.com</td><td>No</td>
+          <td><span class="pill good">Running</span></td>
+          <td class="mono">10.195.250.11</td><td class="mono">192.168.22.195</td>
+        </tr>
+        <tr>
+          <td>cacdnsddc034.infra.olisnet.com</td><td><span class="pill critical">HA Broken</span></td>
+          <td><span class="pill offline">Offline</span></td>
+          <td class="mono">10.195.250.10</td><td class="mono">192.168.22.196</td>
+        </tr>
+        <tr>
+          <td style="padding-left:24px; color:var(--text-secondary);">↳ Node 1 (PASSIVE)</td><td>—</td>
+          <td><span class="pill critical">Error</span></td>
+          <td class="mono">10.195.250.54</td><td class="mono">192.168.22.196</td>
+        </tr>
+        <tr>
+          <td style="padding-left:24px; color:var(--text-secondary);">↳ Node 2 (ACTIVE)</td><td>—</td>
+          <td><span class="pill critical">Error</span></td>
+          <td class="mono">10.195.250.56</td><td class="mono">192.168.22.197</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>2 · Comment on en est arrivé là</h2>
+  <p class="section-note">La séquence d'événements pendant le remplacement matériel, telle que décrite dans le ticket.</p>
+  <div class="card">
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot">1</div><div class="tl-line"></div></div>
+        <div class="tl-text"><b>Démarrage du remplacement matériel.</b> Le nouveau GMC (X6, NIOS 9.0.3, futur cacdnsddc034) est en place à côté du Grid Master original cacdnswdf002 (NIOS 9.0.1).</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot">2</div><div class="tl-line"></div></div>
+        <div class="tl-text"><b><code>set promote_master</code></b> lancé sur le GMC actif → le GMC devient Grid Master, l'original devient GMC.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot">3</div><div class="tl-line"></div></div>
+        <div class="tl-text">Tentative de bascule matérielle sur l'ancien Grid Master (devenu GMC) <b>échoue</b>.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot">4</div><div class="tl-line"></div></div>
+        <div class="tl-text">Reconnexion des câbles sur cacdnswdf002 → il redémarre comme <b>candidat</b> Grid Master.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot crit">5</div><div class="tl-line"></div></div>
+        <div class="tl-text"><b><code>set promote_master</code></b> relancé sur le GMC <span class="tag">2ᵉ bascule</span> → le GMC passe hors ligne, cacdnswdf002 redevient Grid Master.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot crit">6</div></div>
+        <div class="tl-text"><b>État actuel :</b> cacdnswdf002 <i>et</i> cacdnsddc034 (Node 2 actif) se déclarent chacun Grid Master en CLI ; la paire GMC est en erreur / HA Broken.</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>3 · Le plan proposé pour ce soir</h2>
+  <p class="section-note">Enchaînement prévu par DXC, avec les points de vigilance (encadrés en pointillés jaunes) que j'ajouterais avant / entre les étapes.</p>
+  <div class="card">
+    <div class="flow">
+      <div class="checkpoint">
+        <div class="t">⚠ À vérifier avant</div>
+        <div class="d">Mismatch NIOS 9.0.3 (cacdnsddc034) vs 9.0.1 (cacdnswdf002) confirmé sans risque par Infoblox + test <code>set test_promote_master</code></div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="num">ÉTAPE 1</div>
+        <div class="t">Isoler Node 2 (ACTIVE)</div>
+        <div class="d">Coupe le réseau de 10.195.250.56 pour libérer la VIP 10.195.250.10</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="num">ÉTAPE 2</div>
+        <div class="t">Rejoindre Node 1 (PASSIVE)</div>
+        <div class="d">10.195.250.54 doit se stabiliser comme membre du Grid et prendre le rôle actif (HA)</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="num">ÉTAPE 3</div>
+        <div class="t">Répéter si besoin</div>
+        <div class="d">Même traitement sur Node 2 si Node 1 devient actif</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="checkpoint">
+        <div class="t">⚠ À vérifier avant</div>
+        <div class="d">Confirmer que cacdnswdf002 détient bien la base de données de référence avant tout reset</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="num">ÉTAPE 4</div>
+        <div class="t">Reset DB + rejoin en passive</div>
+        <div class="d">Sur l'ex-nœud actif (Node 2), pour restaurer la redondance HA complète</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,545 @@
+<title>Ça circule enfin</title>
+<style>
+  :root{
+    --bg:#F5F1E6;
+    --bg-raised:#FDFBF4;
+    --ink:#1C2320;
+    --ink-dim:#5C655F;
+    --line:#DCD3BC;
+    --accent:#BE6A2C;
+    --accent-2:#256B5C;
+    --accent-soft:#EFDFC4;
+    --serif-bg:#EEE7D6;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#10161A;
+      --bg-raised:#171F23;
+      --ink:#E7E2D5;
+      --ink-dim:#98A39D;
+      --line:#2A3438;
+      --accent:#E39A4C;
+      --accent-2:#56BBA3;
+      --accent-soft:#2A2013;
+      --serif-bg:#141B1E;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#10161A;
+    --bg-raised:#171F23;
+    --ink:#E7E2D5;
+    --ink-dim:#98A39D;
+    --line:#2A3438;
+    --accent:#E39A4C;
+    --accent-2:#56BBA3;
+    --accent-soft:#2A2013;
+    --serif-bg:#141B1E;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{
+    max-width:760px;
+    margin:0 auto;
+    padding:72px 24px 110px;
+  }
+
+  /* ---- header ---- */
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px;height:7px;border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+    flex:none;
+  }
+  h1{
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:700;
+    font-size:clamp(2.3rem,5.6vw,3.3rem);
+    line-height:1.05;
+    letter-spacing:-.01em;
+    margin:0 0 20px;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.08rem;
+    line-height:1.65;
+    color:var(--ink-dim);
+    max-width:62ch;
+    margin:0 0 28px;
+  }
+  .lede strong{color:var(--ink);font-weight:600;}
+  .meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 22px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    color:var(--ink-dim);
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:14px 0;
+  }
+  .meta span b{color:var(--ink);font-weight:600;}
+
+  .baseline{
+    margin-top:34px;
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 20px;
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+  }
+  .baseline .tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:3px 8px;
+    flex:none;
+    margin-top:2px;
+  }
+  .baseline p{margin:0;font-size:.96rem;line-height:1.6;color:var(--ink-dim);}
+  .baseline code{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.87em;
+    color:var(--ink);
+    background:var(--bg);
+    padding:1px 5px;
+    border-radius:4px;
+    border:1px solid var(--line);
+  }
+
+  /* ---- timeline ---- */
+  .timeline{position:relative;margin-top:56px;}
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left:19px;top:6px;bottom:6px;
+    width:2px;
+    background:var(--line);
+  }
+  .entry{
+    position:relative;
+    display:grid;
+    grid-template-columns:40px 1fr;
+    gap:22px;
+    margin-bottom:52px;
+  }
+  .entry:last-of-type{margin-bottom:0;}
+  .marker{
+    position:relative;z-index:1;
+    width:40px;height:40px;border-radius:50%;
+    background:var(--bg-raised);
+    border:2px solid var(--accent);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:600;font-size:14px;
+    color:var(--accent);
+  }
+  .marker.proof{
+    background:var(--accent);
+    color:var(--bg-raised);
+    border-color:var(--accent);
+  }
+  .entry h2{
+    font-size:1.28rem;
+    font-weight:600;
+    margin:2px 0 10px;
+    letter-spacing:-.005em;
+  }
+  .entry .why{
+    font-size:.98rem;
+    line-height:1.65;
+    color:var(--ink-dim);
+    margin:0 0 16px;
+    max-width:60ch;
+  }
+  .entry .why strong{color:var(--ink);font-weight:600;}
+  .entry .why code{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.88em;
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    padding:1px 5px;
+    border-radius:4px;
+  }
+
+  /* ---- terminal blocks ---- */
+  .term{
+    background:#0B0F10;
+    border-radius:9px;
+    overflow:hidden;
+    border:1px solid #232B2C;
+    margin:14px 0;
+  }
+  .term-bar{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.04em;
+    color:#7C8985;
+    padding:8px 14px;
+    border-bottom:1px solid #1C2324;
+    display:flex;justify-content:space-between;
+  }
+  .term pre{
+    margin:0;
+    padding:14px 16px 16px;
+    overflow-x:auto;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.6px;
+    line-height:1.62;
+    color:#C9D2CF;
+    white-space:pre;
+  }
+  .term .prompt{color:#E7A95C;}
+  .term .hl{
+    color:#7CD9C0;
+    background:rgba(86,187,163,.14);
+    border-radius:3px;
+  }
+  .term .err{color:#E28066;}
+  .term .dim{color:#5E6A67;}
+
+  .verdict{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:.03em;
+    color:var(--accent-2);
+    margin-top:12px;
+    display:flex;
+    gap:9px;
+    align-items:flex-start;
+  }
+  .verdict::before{content:"→";flex:none;}
+
+  /* ---- correction callouts ---- */
+  .correction{
+    border:1px dashed var(--accent-2);
+    border-radius:9px;
+    padding:14px 16px;
+    margin:16px 0;
+    background:color-mix(in srgb, var(--accent-2) 6%, transparent);
+  }
+  .correction .label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--accent-2);
+    font-weight:600;
+    margin-bottom:8px;
+    display:block;
+  }
+  .correction p{margin:0 0 6px;font-size:.93rem;line-height:1.6;color:var(--ink);}
+  .correction p:last-child{margin-bottom:0;}
+  .correction .was{color:var(--ink-dim);text-decoration:line-through;text-decoration-color:var(--ink-dim);}
+
+  /* ---- proof diagram ---- */
+  .diagram{margin:18px 0 6px;}
+  .diagram svg{width:100%;height:auto;display:block;}
+  .diagram text{font-family:'JetBrains Mono',monospace;}
+
+  .pending{
+    border-left:3px solid var(--line);
+    padding-left:16px;
+    margin-top:18px;
+  }
+  .pending .label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    display:block;margin-bottom:6px;
+  }
+  .pending p{margin:0;font-size:.93rem;color:var(--ink-dim);line-height:1.6;}
+  .pending code{font-family:'JetBrains Mono',monospace;font-size:.87em;color:var(--ink);}
+
+  /* ---- reflection ---- */
+  .reflection{
+    margin-top:80px;
+    background:var(--serif-bg);
+    border-radius:14px;
+    padding:44px clamp(24px,5vw,52px) 48px;
+  }
+  .reflection .label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    margin-bottom:22px;
+    display:block;
+  }
+  .quote{
+    font-family:'IBM Plex Serif',Georgia,serif;
+    font-style:italic;
+    font-size:clamp(1.15rem,2.6vw,1.4rem);
+    line-height:1.6;
+    color:var(--ink);
+    margin:0 0 26px;
+    text-wrap:balance;
+  }
+  .quote::before{content:"“";}
+  .quote::after{content:"”";}
+  .cite{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    color:var(--ink-dim);
+    margin-bottom:30px;
+  }
+  .synthesis{
+    font-family:'IBM Plex Serif',Georgia,serif;
+    font-size:1.02rem;
+    line-height:1.75;
+    color:var(--ink);
+    max-width:62ch;
+  }
+  .synthesis + .synthesis{margin-top:16px;}
+
+  footer{
+    margin-top:64px;
+    padding-top:22px;
+    border-top:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    color:var(--ink-dim);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width:520px){
+    .entry{grid-template-columns:32px 1fr;gap:14px;}
+    .marker{width:32px;height:32px;font-size:12px;}
+    .timeline::before{left:15px;}
+  }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap">
+
+<div class="page">
+
+  <div class="eyebrow">Journal de lab — SW-1 · IOS-XE · VRF-lite</div>
+  <h1>Ça circule enfin</h1>
+  <p class="lede">Trois switches, deux VRF, une seule ligne de départ : <strong>rd 65000:10</strong>, et rien d'autre. Ce carnet retrace, commande par commande, comment on est passé de « rien ne circule » à voir littéralement l'attribut RT attaché à une route réelle — avec les deux erreurs de syntaxe en cours de route, gardées telles quelles.</p>
+  <div class="meta">
+    <span>3 septembre 2026</span>
+    <span>Lab : <b>SW-1 / SW-2 / SW-3</b>, VRF-lite pur, sans MPLS, sans VXLAN</span>
+    <span>VRF : <b>VRF_USERS</b> (65000:10) · <b>VRF_GUEST</b> (65000:20)</span>
+  </div>
+
+  <div class="baseline">
+    <span class="tag">t0</span>
+    <p>Point de départ, confirmé sur SW-1 : <code>vrf definition VRF_USERS</code> / <code>rd 65000:10</code>. Pas de BGP, pas de route-target, pas de neighbor. La RD existe dans la config — elle n'est attachée à absolument rien.</p>
+  </div>
+
+  <div class="timeline">
+
+    <div class="entry">
+      <div class="marker">1</div>
+      <div>
+        <h2>Faire attacher la RD</h2>
+        <p class="why">Le minimum pour que BGP traite enfin une route pour cette VRF — sans neighbor, sans RT. Une seule variable à la fois.</p>
+        <div class="term">
+          <div class="term-bar"><span>SW-1 — enable</span><span>config</span></div>
+          <pre><span class="prompt">SW-1(config)#</span> router bgp 65000
+<span class="prompt">SW-1(config-router)#</span> address-family ipv4 vrf VRF_USERS
+<span class="prompt">SW-1(config-router-af)#</span>  redistribute connected
+<span class="prompt">SW-1(config-router-af)#</span> exit-address-family</pre>
+        </div>
+        <div class="term">
+          <div class="term-bar"><span>SW-1 — enable</span><span>show</span></div>
+          <pre><span class="prompt">SW-1#</span> show bgp vpnv4 unicast vrf VRF_USERS
+BGP table version is 3, local router ID is 1.1.1.1
+     Network          Next Hop            Metric LocPrf Weight Path
+<span class="hl">Route Distinguisher: 65000:10 (default for vrf VRF_USERS)</span>
+ *&gt;   10.10.10.0/24    0.0.0.0                  0         32768 ?
+ *&gt;   10.10.100.0/30   0.0.0.0                  0         32768 ?</pre>
+        </div>
+        <div class="verdict">La RD est maintenant réellement attachée — en interne, 65000:10:10.10.10.0/24. Toujours rien dans la RIB (AD 0 du connecté bat toujours l'AD 200 du BGP) : ce n'est pas un échec, juste que seule la table BGP peut le montrer.</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="marker">2</div>
+      <div>
+        <h2>Retrouver la bonne syntaxe</h2>
+        <p class="why">Premier détour du carnet — la commande que j'avais donnée était fausse.</p>
+        <div class="term">
+          <div class="term-bar"><span>SW-1 — enable</span><span>show</span></div>
+          <pre><span class="prompt">SW-1#</span> show bgp vrf VRF_USERS ipv4 unicast
+                             ^
+<span class="err">% Invalid input detected at '^' marker.</span></pre>
+        </div>
+        <div class="correction">
+          <span class="label">correction en direct</span>
+          <p><span class="was">show bgp vrf X ipv4 unicast</span> — syntaxe inventée, rejetée par le device.</p>
+          <p>Vérifié via la doc Cisco : le mot-clé après <code>show bgp</code> est <b>vpnv4</b>, pas <code>ipv4</code> — même sans MPLS, parce qu'une route traitée par BGP pour une VRF devient en interne une route « VPNv4 ». Bonne commande : <code>show bgp vpnv4 unicast vrf VRF_USERS</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="marker">3</div>
+      <div>
+        <h2>Une deuxième table, symétrique</h2>
+        <p class="why">Même opération sur VRF_GUEST, pour avoir deux tables VPNv4 isolées avant d'y toucher.</p>
+        <div class="term">
+          <div class="term-bar"><span>SW-1 — enable</span><span>show</span></div>
+          <pre><span class="prompt">SW-1#</span> show bgp vpnv4 unicast vrf VRF_GUEST
+<span class="dim">SW-1# --rien du tout</span></pre>
+        </div>
+        <div class="correction">
+          <span class="label">diagnostic</span>
+          <p>Table vide, sans même l'en-tête — signe que l'address-family n'existait pas du tout, pas juste une table sans routes. Confirmé par <code>show running-config | section router bgp</code> : la config de VRF_GUEST n'avait jamais été appliquée.</p>
+        </div>
+        <div class="term">
+          <div class="term-bar"><span>SW-1 — enable</span><span>show</span></div>
+          <pre><span class="prompt">SW-1#</span> show bgp vpnv4 unicast vrf VRF_GUEST
+BGP table version is 5, local router ID is 1.1.1.1
+     Network          Next Hop            Metric LocPrf Weight Path
+<span class="hl">Route Distinguisher: 65000:20 (default for vrf VRF_GUEST)</span>
+ *&gt;   10.10.20.0/24    0.0.0.0                  0         32768 ?
+ *&gt;   10.10.200.0/30   0.0.0.0                  0         32768 ?</pre>
+        </div>
+        <div class="verdict">Deux tables VPNv4 hermétiques, chacune avec son propre RD, aucune visibilité croisée. Le point de départ exact pour faire réellement circuler un RT.</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="marker">4</div>
+      <div>
+        <h2>Le RT réellement comparé</h2>
+        <p class="why">Un export d'un côté, un import de l'autre — le seul moment où RT sort du statut de ligne de config pour devenir un filtre actif.</p>
+        <div class="term">
+          <div class="term-bar"><span>SW-1 — enable</span><span>config</span></div>
+          <pre><span class="prompt">SW-1(config)#</span> vrf definition VRF_GUEST
+<span class="prompt">SW-1(config-vrf)#</span>  route-target export 65000:9999
+<span class="prompt">SW-1(config)#</span> vrf definition VRF_USERS
+<span class="prompt">SW-1(config-vrf)#</span>  route-target import 65000:9999</pre>
+        </div>
+        <div class="term">
+          <div class="term-bar"><span>SW-1 — enable</span><span>show</span></div>
+          <pre><span class="prompt">SW-1#</span> show bgp vpnv4 unicast vrf VRF_USERS
+BGP table version is 7, local router ID is 1.1.1.1
+     Network          Next Hop            Metric LocPrf Weight Path
+Route Distinguisher: 65000:10 (default for vrf VRF_USERS)
+ *&gt;   10.10.10.0/24    0.0.0.0                  0         32768 ?
+ <span class="hl">*&gt;   10.10.20.0/24    0.0.0.0                  0         32768 ?</span>
+ *&gt;   10.10.100.0/30   0.0.0.0                  0         32768 ?
+ <span class="hl">*&gt;   10.10.200.0/30   0.0.0.0                  0         32768 ?</span></pre>
+        </div>
+        <div class="correction">
+          <span class="label">correction en direct</span>
+          <p><span class="was">« Les routes importées vont apparaître sous une section Route Distinguisher: 65000:20 séparée »</span> — prédiction fausse, annoncée avant test.</p>
+          <p>Vérifié sur un cas quasi identique en forum Cisco : une route importée s'affiche sous le RD <b>par défaut de la VRF qui l'accueille</b>, jamais sous son RD d'origine — exactement ce que confirme la table ci-dessus : les 4 routes sont sous 65000:10, alors que 2 d'entre elles viennent de VRF_GUEST.</p>
+        </div>
+        <div class="verdict">Version de table 5 → 7, nombre de routes 2 → 4 dans VRF_USERS. Le RT vient de faire un vrai travail de comparaison, pas juste d'exister dans la config.</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="marker proof">✓</div>
+      <div>
+        <h2>La preuve, jusqu'à la RIB et l'attribut lui-même</h2>
+        <p class="why">Deux vérifications finales : la route importée s'installe-t-elle réellement dans la table de routage, et peut-on voir l'attribut RT littéralement attaché à une route ?</p>
+        <div class="term">
+          <div class="term-bar"><span>SW-1 — enable</span><span>show</span></div>
+          <pre><span class="prompt">SW-1#</span> show ip route vrf VRF_USERS
+C        10.10.10.0/24 is directly connected, Vlan10
+L        10.10.10.1/32 is directly connected, Vlan10
+<span class="hl">B        10.10.20.0/24 is directly connected, 00:03:52, Vlan20</span>
+L        10.10.20.1/32 is directly connected, Vlan20
+S        10.10.30.0/24 [1/0] via 10.10.100.2
+C        10.10.100.0/30 is directly connected, Vlan100
+L        10.10.100.1/32 is directly connected, Vlan100
+<span class="hl">B        10.10.200.0/30 is directly connected, 00:03:52, Vlan200</span>
+L        10.10.200.1/32 is directly connected, Vlan200</pre>
+        </div>
+        <p class="why"><strong>Code B, sans concurrence d'une route connectée cette fois</strong> — donc BGP gagne et installe réellement la route. Détail à retenir : « <em>is directly connected, Vlan20</em> » alors que Vlan20 appartient à VRF_GUEST. Aucune marque dans un paquet, nulle part — juste le FIB de VRF_USERS autorisé, par le RT, à pointer vers l'interface d'une autre VRF.</p>
+        <div class="term">
+          <div class="term-bar"><span>SW-1 — enable</span><span>show</span></div>
+          <pre><span class="prompt">SW-1#</span> show bgp vpnv4 unicast vrf VRF_USERS 10.10.20.0
+BGP routing table entry for 65000:10:10.10.20.0/24, version 6
+Paths: (1 available, best #1, table VRF_USERS)
+  <span class="hl">Local, imported path from 65000:20:10.10.20.0/24 (VRF_GUEST)</span>
+    0.0.0.0 (via vrf VRF_GUEST) (via VRF_GUEST) from 0.0.0.0 (1.1.1.1)
+      Origin incomplete, metric 0, localpref 100, weight 32768, valid, external, best
+      <span class="hl">Extended Community: RT:65000:9999</span></pre>
+        </div>
+
+        <div class="diagram">
+          <svg viewBox="0 0 640 132" preserveAspectRatio="xMidYMid meet">
+            <rect x="16" y="34" width="184" height="64" rx="9" fill="var(--bg-raised)" stroke="var(--line)" stroke-width="1.5"/>
+            <text x="108" y="60" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">VRF_GUEST</text>
+            <text x="108" y="78" text-anchor="middle" font-size="10.5" fill="var(--ink-dim)">rd 65000:20</text>
+            <text x="108" y="92" text-anchor="middle" font-size="10.5" fill="var(--accent-2)">export 65000:9999</text>
+
+            <rect x="440" y="34" width="184" height="64" rx="9" fill="var(--bg-raised)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="532" y="60" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">VRF_USERS</text>
+            <text x="532" y="78" text-anchor="middle" font-size="10.5" fill="var(--ink-dim)">rd 65000:10</text>
+            <text x="532" y="92" text-anchor="middle" font-size="10.5" fill="var(--accent-2)">import 65000:9999</text>
+
+            <line x1="200" y1="66" x2="432" y2="66" stroke="var(--accent-2)" stroke-width="2" marker-end="url(#arrow)"/>
+            <text x="316" y="52" text-anchor="middle" font-size="10.5" fill="var(--accent-2)">10.10.20.0/24 · RT:65000:9999</text>
+            <text x="316" y="118" text-anchor="middle" font-size="10" fill="var(--ink-dim)">même routeur — comparaison interne, aucun câble</text>
+
+            <defs>
+              <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="var(--accent-2)"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="verdict">« imported path from 65000:20:… (VRF_GUEST) » retrace l'origine ; « Extended Community: RT:65000:9999 » est l'attribut RT littéralement attaché à cette route. C'est la preuve la plus directe possible sans capture réseau.</div>
+
+        <div class="pending">
+          <span class="label">reste à confirmer</span>
+          <p><code>ping vrf VRF_USERS 10.10.20.1 source Vlan10</code> — pour boucler jusqu'au trafic réel.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="reflection">
+    <span class="label">Note personnelle — même journée</span>
+    <p class="quote">Quand je travaille avec une IA, je ne gagne pas de temps pour apprendre le CCNP ou le CCIE. Je perds même du temps, parce que je vais beaucoup plus loin dans le raisonnement et la compréhension qu'avec un livre page par page, où personne ne répond à tes questions.</p>
+    <div class="cite">— sur ce que ce carnet vient de démontrer, une ligne de config à la fois</div>
+    <p class="synthesis">Trois heures sur un seul <code style="font-family:'JetBrains Mono',monospace;background:var(--bg-raised);border:1px solid var(--line);padding:1px 5px;border-radius:4px;">rd 65000:10</code>, là où un cours l'aurait défini en une phrase avant de passer à autre chose. Le gain n'est pas la vitesse : c'est de pouvoir pousser une question jusqu'à l'endroit exact où la compréhension bloque — y compris quand la réponse donnée était fausse, comme deux fois dans ce carnet — au lieu de s'arrêter parce que le chapitre suivant commence.</p>
+  </div>
+
+  <footer>
+    <span>SW-1 · lab VRF-lite, 3 switches · Projet ENCOR</span>
+    <span>rd 65000:10 → RT:65000:9999</span>
+  </footer>
+
+</div>

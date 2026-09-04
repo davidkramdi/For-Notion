@@ -1,1 +1,75 @@
+<div id="lisp-map-register-viz" aria-label="Schéma interactif d’un message Cisco LISP Map-Register">
+  <style>
+    #lisp-map-register-viz{color-scheme:light dark;--lisp-bg:light-dark(#f7f9fc,#101521);--lisp-surface:light-dark(#ffffff,#171e2d);--lisp-fg:light-dark(#172033,#edf3ff);--lisp-muted:light-dark(#667085,#a9b6cc);--lisp-border:light-dark(#cbd5e1,#3a465c);--lisp-blue:light-dark(#1e66f5,#6ea8fe);--lisp-blue-soft:light-dark(#dbeafe,#19345f);--lisp-orange:light-dark(#c2410c,#fb923c);--lisp-orange-soft:light-dark(#ffedd5,#4a2b1b);--lisp-purple:light-dark(#7c3aed,#c4a7ff);--lisp-purple-soft:light-dark(#ede9fe,#33245a);font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--lisp-fg);background:var(--lisp-bg);max-width:920px;margin:auto;padding:22px;box-sizing:border-box;border-radius:16px}
+    #lisp-map-register-viz *{box-sizing:border-box}
+    #lisp-map-register-viz h2{font-size:20px;margin:0 0 4px}
+    #lisp-map-register-viz h2{color:var(--lisp-blue)}
+    #lisp-map-register-viz .sub{font-size:13px;color:var(--lisp-muted);margin-bottom:16px}
+    #lisp-map-register-viz .packet{border:1px solid var(--lisp-border);border-radius:12px;overflow:hidden;background:var(--lisp-surface);box-shadow:0 8px 24px light-dark(rgb(30 64 175 / .08),rgb(0 0 0 / .22))}
+    #lisp-map-register-viz .bitnums{display:grid;grid-template-columns:repeat(32,1fr);padding:5px 0;font:9px ui-monospace,monospace;color:var(--lisp-muted);border-bottom:1px solid var(--lisp-border)}
+    #lisp-map-register-viz .bitnums span{text-align:center}
+    #lisp-map-register-viz .row{display:grid;grid-template-columns:repeat(32,1fr);min-height:48px;border-bottom:1px solid var(--lisp-border)}
+    #lisp-map-register-viz .row:last-child{border-bottom:0}
+    #lisp-map-register-viz button,#lisp-map-register-viz .field{display:flex;align-items:center;justify-content:center;text-align:center;border:0;border-right:1px solid var(--lisp-border);padding:5px 3px;background:transparent;color:var(--lisp-fg);font:500 11px ui-monospace,monospace;min-width:0}
+    #lisp-map-register-viz button{cursor:pointer;outline-offset:-3px}
+    #lisp-map-register-viz button:hover,#lisp-map-register-viz button[aria-pressed="true"]{background:var(--lisp-purple-soft);color:var(--lisp-purple)}
+    #lisp-map-register-viz .hot{background:var(--lisp-blue-soft);color:var(--lisp-blue)}
+    #lisp-map-register-viz .a-hot{background:var(--lisp-orange-soft);color:var(--lisp-orange)}
+    #lisp-map-register-viz .muted{opacity:.55;font-weight:500}
+    #lisp-map-register-viz .wide{font-family:ui-monospace,monospace;font-weight:500}
+    #lisp-map-register-viz .section{display:flex;align-items:center;gap:8px;margin:17px 0 7px;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--lisp-purple)}
+    #lisp-map-register-viz .section:after{content:"";height:1px;background:var(--lisp-border);flex:1}
+    #lisp-map-register-viz .detail{margin-top:14px;border-left:4px solid var(--lisp-blue);padding:9px 12px;min-height:64px;background:var(--lisp-blue-soft);border-radius:0 8px 8px 0}
+    #lisp-map-register-viz .detail b{font-size:13px}
+    #lisp-map-register-viz .detail p{font-size:13px;line-height:1.42;margin:4px 0 0}
+    #lisp-map-register-viz .flow{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;margin-top:16px;font-size:12px}
+    #lisp-map-register-viz .node{border:1px solid var(--lisp-border);background:var(--lisp-surface);color:var(--lisp-purple);border-radius:7px;padding:6px 9px}
+    #lisp-map-register-viz .arrow{opacity:.55}
+    #lisp-map-register-viz .note{font-size:11px;color:var(--lisp-muted);margin-top:12px;line-height:1.4}
+    @media(max-width:560px){#lisp-map-register-viz{padding:2px}#lisp-map-register-viz .row{min-height:42px}#lisp-map-register-viz button,#lisp-map-register-viz .field{font-size:9px;padding:2px 1px}#lisp-map-register-viz .bitnums{font-size:7px}#lisp-map-register-viz .sub{font-size:12px}}
+  </style>
+  <h2>LISP Map-Register — format utile à retenir</h2>
+  <div class="sub">xTR/ETR → Map-Server · UDP destination 4342 · clique sur un champ coloré</div>
+
+  <div class="section">En-tête Map-Register — premier mot de 32 bits</div>
+  <div class="packet">
+    <div class="bitnums" aria-hidden="true"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span>31</span></div>
+    <div class="row">
+      <div class="field" style="grid-column:span 4">Type=3</div>
+      <button class="hot" style="grid-column:span 1" data-key="p">P</button>
+      <button style="grid-column:span 1" data-key="s">S</button>
+      <button class="hot" style="grid-column:span 1" data-key="i">I</button>
+      <div class="field muted" style="grid-column:span 13">Reserved</div>
+      <button style="grid-column:span 1" data-key="e">E</button>
+      <button style="grid-column:span 1" data-key="t">T</button>
+      <button style="grid-column:span 1" data-key="merge">a</button>
+      <button class="muted" style="grid-column:span 1" data-key="r">R</button>
+      <button class="hot" style="grid-column:span 1" data-key="m">M</button>
+      <div class="field" style="grid-column:span 8;border-right:0">Record Count</div>
+    </div>
+    <div class="row"><div class="field wide" style="grid-column:span 32;border-right:0">Nonce — 64 bits</div></div>
+    <div class="row"><div class="field wide" style="grid-column:span 8">Key ID — 8</div><div class="field wide" style="grid-column:span 8">Algorithm ID — 8</div><div class="field wide" style="grid-column:span 16;border-right:0">Authentication Data Length — 16</div></div>
+    <div class="row"><div class="field wide" style="grid-column:span 32;border-right:0">Authentication Data — longueur variable</div></div>
+  </div>
+
+  <div class="section">EID-Record — répété « Record Count » fois</div>
+  <div class="packet">
+    <div class="row"><div class="field wide" style="grid-column:span 32;border-right:0">Record TTL — 32 bits</div></div>
+    <div class="row"><div class="field" style="grid-column:span 8">Locator Count</div><div class="field" style="grid-column:span 8">EID mask-len</div><div class="field" style="grid-column:span 3">ACT</div><button class="a-hot" style="grid-column:span 1" data-key="auth">A</button><div class="field muted" style="grid-column:span 12;border-right:0">Reserved</div></div>
+    <div class="row"><div class="field muted" style="grid-column:span 4">Rsvd</div><div class="field" style="grid-column:span 12">Map-Version</div><div class="field" style="grid-column:span 16;border-right:0">EID-Prefix-AFI</div></div>
+    <div class="row"><div class="field wide" style="grid-column:span 32;border-right:0">EID-Prefix + Locator-Records (RLOC)</div></div>
+  </div>
+
+  <div class="section">Extension conditionnelle</div>
+  <div class="packet">
+    <div class="row"><button class="hot" style="grid-column:span 21" data-key="xtr">xTR-ID — 128 bits (si I=1)</button><div class="field hot" style="grid-column:span 11;border-right:0">Site-ID — 64 bits</div></div>
+  </div>
+
+  <div class="detail" aria-live="polite"><b id="lisp-detail-title">Les quatre éléments à ne pas mélanger</b><p id="lisp-detail-text">P, I et M sont dans l’en-tête du Map-Register. A est dans chaque EID-Record. Le xTR-ID n’est pas un bit : c’est un champ de 128 bits ajouté en fin de message lorsque I=1.</p></div>
+  <div class="flow"><span class="node">xTR / ETR</span><span class="arrow">— Map-Register (P, I, M, A) →</span><span class="node">Map-Server</span><span class="arrow">— si M=1 →</span><span class="node">Map-Notify</span></div>
+  <div class="note">Lecture CCIE : P=proxy reply demandé au Map-Server ; I=identifiants présents ; M=accusé Map-Notify demandé ; A=Mapping-Record faisant autorité. Le R de l’en-tête est réservé, à 0 — ne pas le confondre avec le R du Locator-Record.</div>
+  <script>
+    (()=>{const root=document.getElementById('lisp-map-register-viz');const title=root.querySelector('#lisp-detail-title');const text=root.querySelector('#lisp-detail-text');const d={p:['P — Proxy Map-Reply','P=1 : le xTR demande au Map-Server de répondre aux Map-Requests à sa place. La réponse proxy du Map-Server est non authoritative.'],s:['S — Security-capable','S=1 : l’émetteur indique la prise en charge des procédures de sécurité LISP.'],i:['I — ID-present','I=1 : un xTR-ID de 128 bits, suivi d’un Site-ID de 64 bits, est ajouté après le dernier Record.'],e:['E — EID-notify','Utilisé par un First-Hop Router qui découvre un EID dynamique et envoie ce Map-Register EID-notify à un xTR du même site.'],t:['T — Use TTL for timeout','T=1 : le xTR demande au Map-Server d’utiliser Record TTL comme délai d’expiration de l’enregistrement.'],merge:['a — Merge-request','a=1 : demande au Map-Server de fusionner les RLOC-Records de plusieurs xTR pour le même EID-Record.'],r:['R — réservé','Dans cet en-tête, R est non assigné : émission à 0, ignoré à la réception.'],m:['M — Want-Map-Notify','M=1 : le xTR demande un Map-Notify en retour pour confirmer la réception et le traitement du Map-Register.'],auth:['A — Authoritative','A appartient à l’EID-Record. A=1 indique que le Mapping-Record est authoritative. Ce n’est pas un bit du premier mot de l’en-tête.'],xtr:['xTR-ID — champ de 128 bits','Identifie de manière unique le xTR dans le périmètre du Site-ID. Il est présent seulement si I=1 ; le Site-ID de 64 bits le suit.']};root.querySelectorAll('button[data-key]').forEach(b=>b.addEventListener('click',()=>{root.querySelectorAll('button[data-key]').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');const v=d[b.dataset.key];title.textContent=v[0];text.textContent=v[1]}))})();
+  </script>
+</div>
 

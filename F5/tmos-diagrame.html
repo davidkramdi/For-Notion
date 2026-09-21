@@ -1,0 +1,304 @@
+<title>TMM vs HMS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+    --text: #1a2029;
+    --muted: #5c6674;
+    --line: #dde1e8;
+    --traffic: #2b5fd6;
+    --traffic-soft: #e3ebfc;
+    --traffic-strong: #1d3f96;
+    --admin: #b96a17;
+    --admin-soft: #f7e9d4;
+    --admin-strong: #7d480d;
+    --mono-bg: #eef1f5;
+    --shadow: 0 1px 2px rgba(20, 24, 32, 0.06), 0 8px 24px rgba(20, 24, 32, 0.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12151b;
+      --surface: #1a1e26;
+      --text: #e8ebf0;
+      --muted: #99a2b2;
+      --line: #2b3038;
+      --traffic: #7ea2f5;
+      --traffic-soft: #1f2c4a;
+      --traffic-strong: #b7cafb;
+      --admin: #e6a95c;
+      --admin-soft: #3b2c17;
+      --admin-strong: #f2c690;
+      --mono-bg: #1f2430;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #12151b;
+    --surface: #1a1e26;
+    --text: #e8ebf0;
+    --muted: #99a2b2;
+    --line: #2b3038;
+    --traffic: #7ea2f5;
+    --traffic-soft: #1f2c4a;
+    --traffic-strong: #b7cafb;
+    --admin: #e6a95c;
+    --admin-soft: #3b2c17;
+    --admin-strong: #f2c690;
+    --mono-bg: #1f2430;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    padding-inline: 20px;
+    padding-block: 40px;
+  }
+
+  main {
+    max-width: 880px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  header h1 {
+    font-size: clamp(1.5rem, 1.1rem + 1.5vw, 2rem);
+    font-weight: 700;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 8px;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 65ch;
+    margin: 0;
+  }
+
+  figure {
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  figure svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+
+  figcaption {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  figcaption strong { color: var(--text); font-weight: 600; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  .takeaway {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--traffic);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .takeaway .mark {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    color: var(--traffic);
+    flex-shrink: 0;
+  }
+
+  .mono-chip {
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  footer {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    color: var(--muted);
+    text-align: center;
+    padding-top: 8px;
+  }
+</style>
+
+<main>
+  <header>
+    <p class="eyebrow">F5 BIG-IP · Architecture TMOS</p>
+    <h1>TMM et HMS : deux systèmes, un seul boîtier</h1>
+    <p>
+      TMOS n'est pas un OS unique : c'est deux systèmes indépendants qui se partagent le même châssis
+      sans jamais se parler. L'un pousse le trafic, l'autre administre la machine — exactement comme
+      une cuisine et une réception dans un même restaurant, chacune avec ses propres outils.
+    </p>
+  </header>
+
+  <figure aria-labelledby="fig1-cap">
+    <svg viewBox="0 0 920 480" role="img" aria-label="Le trafic passe par le NIC puis le TMM jusqu'aux pool members, sans jamais toucher Linux ; l'administration passe par un poste admin, le HMS Linux, puis bash, TMSH ou l'interface graphique — les deux chemins ne communiquent pas.">
+      <defs>
+        <marker id="arrowTraffic" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--traffic)" />
+        </marker>
+        <marker id="arrowAdmin" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--admin)" />
+        </marker>
+      </defs>
+
+      <rect x="10" y="10" width="900" height="460" rx="16" fill="none" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="5 6" />
+      <text x="30" y="36" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--muted)">BIG-IP — même châssis physique, deux mondes séparés</text>
+
+      <!-- TRAFFIC LANE -->
+      <text x="30" y="78" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" letter-spacing="0.06em" fill="var(--traffic)">TRAFIC — TMM</text>
+
+      <rect x="30" y="96" width="130" height="68" rx="8" fill="var(--surface)" stroke="var(--traffic)" stroke-width="1.5" />
+      <text x="95" y="124" text-anchor="middle" font-size="14" font-weight="600" fill="var(--text)">NIC</text>
+      <text x="95" y="142" text-anchor="middle" font-size="10.5" fill="var(--muted)">paquets entrants</text>
+
+      <line x1="162" y1="130" x2="222" y2="130" stroke="var(--traffic)" stroke-width="2" marker-end="url(#arrowTraffic)" />
+
+      <rect x="228" y="86" width="300" height="90" rx="10" fill="var(--traffic-soft)" stroke="var(--traffic)" stroke-width="2" />
+      <text x="378" y="115" text-anchor="middle" font-size="19" font-weight="700" fill="var(--traffic-strong)">TMM</text>
+      <text x="378" y="134" text-anchor="middle" font-size="11" fill="var(--text)">Traffic Management Microkernel</text>
+      <text x="378" y="155" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--muted)">CPU dédiés · RAM dédiée · accès matériel direct</text>
+
+      <line x1="530" y1="130" x2="608" y2="130" stroke="var(--traffic)" stroke-width="2" marker-end="url(#arrowTraffic)" />
+
+      <rect x="614" y="96" width="280" height="68" rx="8" fill="var(--surface)" stroke="var(--traffic)" stroke-width="1.5" />
+      <text x="754" y="122" text-anchor="middle" font-size="14" font-weight="600" fill="var(--text)">Pool members</text>
+      <text x="754" y="141" text-anchor="middle" font-size="10.5" fill="var(--muted)">applications backend</text>
+
+      <!-- BARRIER -->
+      <line x1="30" y1="230" x2="900" y2="230" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="2 7" />
+      <circle cx="378" cy="230" r="11" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.5" />
+      <line x1="371" y1="223" x2="385" y2="237" stroke="var(--muted)" stroke-width="1.5" />
+      <text x="400" y="234" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--muted)">TMM ignore totalement HMS — et inversement</text>
+
+      <!-- ADMIN LANE -->
+      <text x="30" y="286" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" letter-spacing="0.06em" fill="var(--admin)">ADMINISTRATION — HMS</text>
+
+      <rect x="30" y="304" width="130" height="68" rx="8" fill="var(--surface)" stroke="var(--admin)" stroke-width="1.5" />
+      <text x="95" y="332" text-anchor="middle" font-size="14" font-weight="600" fill="var(--text)">Poste admin</text>
+      <text x="95" y="350" text-anchor="middle" font-size="10.5" fill="var(--muted)">SSH / HTTPS</text>
+
+      <line x1="162" y1="338" x2="222" y2="338" stroke="var(--admin)" stroke-width="2" marker-end="url(#arrowAdmin)" />
+
+      <rect x="228" y="294" width="300" height="90" rx="10" fill="var(--admin-soft)" stroke="var(--admin)" stroke-width="2" />
+      <text x="378" y="323" text-anchor="middle" font-size="19" font-weight="700" fill="var(--admin-strong)">HMS</text>
+      <text x="378" y="342" text-anchor="middle" font-size="11" fill="var(--text)">Host Management Subsystem</text>
+      <text x="378" y="363" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--muted)">Linux (CentOS modifié)</text>
+
+      <line x1="530" y1="338" x2="608" y2="338" stroke="var(--admin)" stroke-width="2" marker-end="url(#arrowAdmin)" />
+
+      <rect x="614" y="294" width="280" height="26" rx="6" fill="var(--surface)" stroke="var(--admin)" stroke-width="1.2" />
+      <text x="754" y="311" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--text)">bash</text>
+
+      <rect x="614" y="326" width="280" height="26" rx="6" fill="var(--admin-soft)" stroke="var(--admin)" stroke-width="1.6" />
+      <text x="754" y="343" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="var(--admin-strong)">TMSH</text>
+
+      <rect x="614" y="358" width="280" height="26" rx="6" fill="var(--surface)" stroke="var(--admin)" stroke-width="1.2" />
+      <text x="754" y="375" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--text)">BIG-IP Configuration Utility (GUI)</text>
+    </svg>
+    <figcaption id="fig1-cap">
+      <strong>La séparation n'est pas qu'un concept :</strong> le trafic (haut) et l'administration (bas)
+      empruntent deux chemins physiquement distincts sur le même boîtier. Le noyau Linux du HMS ne voit
+      jamais passer un paquet applicatif — TMM le traite entièrement lui-même, avec son propre accès au matériel.
+    </figcaption>
+  </figure>
+
+  <div class="grid-2">
+    <figure aria-labelledby="fig2-cap">
+      <svg viewBox="0 0 320 230" role="img" aria-label="TMM reçoit quasiment tous les cœurs CPU et toute la RAM ; HMS ne dispose que d'un cœur partagé avec TMM et d'une quantité de RAM limitée et réservée.">
+        <text x="0" y="20" font-size="13" font-weight="600" fill="var(--text)">CPU</text>
+        <rect x="0" y="30" width="320" height="30" rx="6" fill="var(--mono-bg)" stroke="var(--line)" />
+        <rect x="0" y="30" width="278" height="30" fill="var(--traffic-soft)" stroke="var(--traffic)" stroke-width="1.5" />
+        <rect x="278" y="30" width="42" height="30" fill="var(--admin-soft)" stroke="var(--admin)" stroke-width="1.5" />
+        <text x="8" y="82" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--traffic-strong)">TMM — quasiment tous les cœurs</text>
+        <text x="312" y="82" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--admin-strong)">HMS — 1 cœur, partagé</text>
+
+        <text x="0" y="130" font-size="13" font-weight="600" fill="var(--text)">RAM</text>
+        <rect x="0" y="140" width="320" height="30" rx="6" fill="var(--mono-bg)" stroke="var(--line)" />
+        <rect x="0" y="140" width="278" height="30" fill="var(--traffic-soft)" stroke="var(--traffic)" stroke-width="1.5" />
+        <rect x="278" y="140" width="42" height="30" fill="var(--admin-soft)" stroke="var(--admin)" stroke-width="1.5" />
+        <text x="8" y="192" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--traffic-strong)">TMM — quasiment toute la RAM</text>
+        <text x="312" y="192" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--admin-strong)">HMS — réservée, limitée</text>
+      </svg>
+      <figcaption id="fig2-cap">
+        La séparation logique se prolonge dans le matériel : TMM capte l'essentiel des ressources
+        pour garder une latence prévisible, HMS se contente du strict nécessaire pour administrer.
+      </figcaption>
+    </figure>
+
+    <figure aria-labelledby="fig3-cap">
+      <svg viewBox="0 0 320 230" role="img" aria-label="La CLI bigpipe, utilisée avant les versions 10 et 11 de BIG-IP, a été remplacée par TMSH à partir de la version 10 ou 11, toujours en usage aujourd'hui.">
+        <line x1="40" y1="115" x2="280" y2="115" stroke="var(--line)" stroke-width="2" />
+        <circle cx="60" cy="115" r="8" fill="var(--mono-bg)" stroke="var(--muted)" stroke-width="1.5" />
+        <text x="60" y="82" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="var(--muted)">bigpipe</text>
+        <text x="60" y="140" text-anchor="middle" font-size="10.5" fill="var(--muted)">avant v10/v11</text>
+
+        <line x1="90" y1="115" x2="230" y2="115" stroke="var(--muted)" stroke-width="2" marker-end="url(#arrowTraffic)" />
+
+        <circle cx="260" cy="115" r="9" fill="var(--traffic-soft)" stroke="var(--traffic)" stroke-width="2" />
+        <text x="260" y="82" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="var(--traffic-strong)">TMSH</text>
+        <text x="260" y="140" text-anchor="middle" font-size="10.5" fill="var(--muted)">v10/v11 → aujourd'hui</text>
+      </svg>
+      <figcaption id="fig3-cap">
+        Si une doc ou une capture d'écran mentionne <span class="mono-chip">bigpipe</span>, c'est une
+        génération de BIG-IP antérieure à TMSH.
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="takeaway">
+    <span class="mark">→</span>
+    <span>
+      Retiens une seule règle pour tout le reste : si ça touche au <strong>trafic</strong>, c'est TMM,
+      donc invisible pour Linux. Si ça touche à la <strong>configuration ou la supervision</strong>,
+      c'est HMS, donc du Linux classique (bash, TMSH, GUI) qui ne voit jamais un paquet applicatif.
+    </span>
+  </div>
+
+  <footer>TMOS · TMM · HMS — d'après tes notes BIG-IP</footer>
+</main>
